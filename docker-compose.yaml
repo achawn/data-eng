@@ -86,6 +86,15 @@ x-airflow-common:
       condition: service_healthy
 
 services:
+  sqlite:
+    image: alpine/sqlite
+    container_name: sqlite
+    hostname: airflow.sqlite
+    ports:
+      - "8191:8191"
+    volumes:
+      - ./sqlite:/db
+    restart: always
   postgres:
     image: postgres:13
     environment:
