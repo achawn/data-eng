@@ -6,6 +6,7 @@ from airflow.operators.python_operator import PythonOperator
 import pandas as pd
 import zipfile
 import os
+import sqlite3
 
 def CSVToJson():
     with zipfile.ZipFile('data/crime_data_2020_present.zip', 'r') as zip:
@@ -13,25 +14,18 @@ def CSVToJson():
             print(f"- {file}")
         with zip.open('Users/andrewhawn/Downloads/Crime_Data_from_2020_to_Present.csv') as data_file:
             df=pd.read_csv(data_file)
-
+    conn=sqlite3.connect('sqlite/db.db')
     return df
-    #df=pd.read_CSV('crime_data_2020_present.csv')
-    # for i,r in df.iterrows():
-    #     print(r['name'])
-    # df.to_JSON('fromAirflow.JSON',orient='records')
 
 default_args = {
     'owner': 'andrew',
     'start_date': dt.datetime(2020, 3, 18),
-    #'retries': 1,
     'max_active_runs': 1,
     'catchup': False
-    #'retry_delay': dt.timedelta(minutes=5),
 }
 
 with DAG(
     'CSVToJsonDAG',
-    #default_args=default_args,
     start_date=dt.datetime(2022, 12, 1),
     catchup=False,
     max_active_runs=1,
@@ -43,10 +37,6 @@ with DAG(
         bash_command='echo "reading csv..."'
     )
 
-    # list_dir=BashOperator(
-    #     task_id='listing',
-    #     bash_command='ls -a'
-    # )
     def list_call():
         return os.listdir()
     list_dir=PythonOperator(

@@ -1,4 +1,5 @@
 config/
 logs/
 plugins/
+sqlite/
 __pycache__
