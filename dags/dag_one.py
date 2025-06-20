@@ -15,6 +15,7 @@ def CSVToJson():
         with zip.open('Users/andrewhawn/Downloads/Crime_Data_from_2020_to_Present.csv') as data_file:
             df=pd.read_csv(data_file)
     conn=sqlite3.connect('sqlite/db.db')
+    df.to_sql(name='crime', con=conn, if_exists='replace', index=False)
     return df
 
 default_args = {
