@@ -9,14 +9,21 @@ import os
 import sqlite3
 
 def CSVToJson():
+    conn=sqlite3.connect('sqlite/db.db')
+    if pd.read_sql_query('SELECT COUNT(*) FROM crime', conn).iloc[0, 0] > 0:
+        return
     with zipfile.ZipFile('data/crime_data_2020_present.zip', 'r') as zip:
         for file in zip.namelist():
             print(f"- {file}")
         with zip.open('Users/andrewhawn/Downloads/Crime_Data_from_2020_to_Present.csv') as data_file:
             df=pd.read_csv(data_file)
-    conn=sqlite3.connect('sqlite/db.db')
+
     df.to_sql(name='crime', con=conn, if_exists='replace', index=False)
-    return df
+    return df.columns.tolist()
+
+def describe():
+    conn=sqlite3.connect('sqlite/db.db')
+    return pd.read_sql_query('SELECT * FROM crime', conn).describe()
 
 default_args = {
     'owner': 'andrew',
@@ -50,4 +57,9 @@ with DAG(
         python_callable=CSVToJson
     )
 
-    starting >> list_dir >> csvjson
+    describe=PythonOperator(
+        task_id='describeData',
+        python_callable=describe
+    )
+
+    starting >> list_dir >> csvjson >> describe
