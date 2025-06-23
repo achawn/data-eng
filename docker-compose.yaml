@@ -87,6 +87,14 @@ x-airflow-common:
       condition: service_healthy
 
 services:
+  plotly:
+    image: plotly/streambed-primary
+    container_name: plotly
+    hostname: airflow.viz
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./app:/app
   sqlite:
     image: alpine/sqlite
     container_name: sqlite

@@ -3,3 +3,4 @@ logs/
 plugins/
 sqlite/
 __pycache__
+venv/
